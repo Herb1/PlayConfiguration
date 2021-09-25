@@ -1,0 +1,8 @@
+{
+    "name": "de.awesome-co.playconfiguration",
+    "displayName": "Play Configuration",
+    "version": "1.0.2",
+    "unity": "2020.3",
+    "description": "Closes selected scenes on enter play mode (editor only).",
+    "licensesUrl": "https://github.com/Herb1/PlayConfiguration/blob/master/LICENSE.txt"
+}
