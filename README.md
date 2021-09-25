@@ -1,6 +1,6 @@
 # PlayConfiguration
 
-This package helps you to specify scenes that should be loaded/unloaded when entering the playmode in the Unity Editor. 
+This package helps you to specify unity scenes that should be loaded/unloaded when entering the playmode in the Unity Editor. 
 When leaving the playmode, the previously loaded scenes are restored. Loading/unloading is applied only to scenes listed in the hierarchy.
 
 ## INSTALLATION
