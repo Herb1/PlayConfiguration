@@ -12,4 +12,4 @@ There are two ways to install this package:
 
 
 ## Set up
-- You can specify scenes for which this should apply via Menu/Tools/Game Configuration/Show Settings. This applies only to scenes that are listed in the hierarchy
+- You can specify scenes for which this should apply via Menu/Tools/Play Configuration/Show Settings. This applies only to scenes that are listed in the hierarchy
