@@ -15,7 +15,6 @@ namespace EditorPlayConfiguration
         public List<SceneStatus> Scenes;
 
         public bool EnablePlayConfiguration = true;
-        public bool RestoreScenesAfterPlayModeEnded = true;
         public bool SearchScenesInBuildOnly;
         public bool SearchOnlyInPath;
         public string ScenePath;
@@ -32,7 +31,7 @@ namespace EditorPlayConfiguration
                 return _instance;
             }
         }
-
+        
         private static PlayConfigurationSettings GetInstance()
         {
             var instance = Resources.Load<PlayConfigurationSettings>(PlayConfigurationUtils.PlayConfigurationName);
@@ -51,7 +50,6 @@ namespace EditorPlayConfiguration
 
                 instance.Scenes = new List<SceneStatus>();
                 instance.EnablePlayConfiguration = true;
-                instance.RestoreScenesAfterPlayModeEnded = true;
             }
 
             return instance;

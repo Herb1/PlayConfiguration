@@ -40,42 +40,41 @@ namespace EditorPlayConfiguration
         {
             LoadAllScenes();
         }
-
+        
         private static void LogPlayModeState(PlayModeStateChange state)
         {
             if (!_configurationSettings.EnablePlayConfiguration)
             {
                 return;
             }
+            
+            var primaryScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(_configurationSettings.Scenes[0].ScenePath);
 
             switch (state)
             {
                 case PlayModeStateChange.ExitingEditMode:
-                    UpdateSceneStatusOnEnterPlayMode(_configurationSettings.Scenes);
-
-                    break;
-
-                case PlayModeStateChange.EnteredEditMode:
-                {
-                    var scenesPaths = PlayConfigurationUtils.LoadStoredScenes();
-                    PlayConfigurationUtils.DeleteTempData();
-
-                    if (scenesPaths == null)
+                    
+                    if (primaryScene != null)
                     {
-                        break;
+                        EditorSceneManager.playModeStartScene = primaryScene;
                     }
-
-                    if (_configurationSettings.RestoreScenesAfterPlayModeEnded && scenesPaths != null)
+                    
+                    break;
+                case PlayModeStateChange.EnteredPlayMode:
+                {
+                    if (primaryScene != null)
                     {
-                        for (int i = 0; i < scenesPaths.Length; i++)
+                        for (int i = 1; i < _configurationSettings.Scenes.Count; i++)
                         {
-                            EditorSceneManager.OpenScene(scenesPaths[i], OpenSceneMode.Additive);
+                            if (_configurationSettings.Scenes[i].ActiveOnPlay)
+                            {
+                                EditorSceneManager.LoadSceneInPlayMode(_configurationSettings.Scenes[i].ScenePath, new LoadSceneParameters(LoadSceneMode.Additive));
+                            }
                         }
                     }
                     break;
                 }
             }
-
         }
 
         private static void UpdateSceneStatusOnEnterPlayMode(List<SceneStatus> sceneStatus)
