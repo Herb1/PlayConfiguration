@@ -76,6 +76,7 @@ namespace EditorPlayConfiguration
             if (GUILayout.Button(AppendNewScenes, GUILayout.Height(40)))
             {
                 configuration.AppendNewScenes();
+                EditorUtility.SetDirty(serializedObject);
             }
 
             EditorGUILayout.BeginHorizontal();
@@ -91,6 +92,7 @@ namespace EditorPlayConfiguration
             }
 
             EditorGUILayout.EndHorizontal();
+            EditorUtility.SetDirty(serializedObject);
         }
     }
 }
