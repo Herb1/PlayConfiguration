@@ -92,7 +92,7 @@ namespace EditorPlayConfiguration
             }
 
             EditorGUILayout.EndHorizontal();
-            EditorUtility.SetDirty(serializedObject);
+            EditorUtility.SetDirty(target);
         }
     }
 }
