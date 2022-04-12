@@ -40,42 +40,49 @@ namespace EditorPlayConfiguration
         {
             LoadAllScenes();
         }
-
+        
         private static void LogPlayModeState(PlayModeStateChange state)
         {
             if (!_configurationSettings.EnablePlayConfiguration)
             {
                 return;
             }
-
-            switch (state)
+            
+            var primaryScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(_configurationSettings.Scenes[0].ScenePath);
+            bool primarySceneInEditor = false;
+            
+            
+            if (primaryScene != null)
             {
-                case PlayModeStateChange.ExitingEditMode:
-                    UpdateSceneStatusOnEnterPlayMode(_configurationSettings.Scenes);
-
-                    break;
-
-                case PlayModeStateChange.EnteredEditMode:
+                Scene primaryEditorScene = SceneManager.GetSceneByName(primaryScene.name);
+                if (primaryEditorScene.isLoaded)
                 {
-                    var scenesPaths = PlayConfigurationUtils.LoadStoredScenes();
-                    PlayConfigurationUtils.DeleteTempData();
-
-                    if (scenesPaths == null)
-                    {
-                        break;
-                    }
-
-                    if (_configurationSettings.RestoreScenesAfterPlayModeEnded && scenesPaths != null)
-                    {
-                        for (int i = 0; i < scenesPaths.Length; i++)
-                        {
-                            EditorSceneManager.OpenScene(scenesPaths[i], OpenSceneMode.Additive);
-                        }
-                    }
-                    break;
+                    EditorSceneManager.playModeStartScene = primaryScene;
+                    primarySceneInEditor = true;
+                }
+                else
+                {
+                    EditorSceneManager.playModeStartScene = null;
                 }
             }
+            else
+            {
+                EditorSceneManager.playModeStartScene = null;
+            }
 
+            if (primarySceneInEditor && state == PlayModeStateChange.EnteredPlayMode)
+            {
+                if (primaryScene != null)
+                {
+                    for (int i = 1; i < _configurationSettings.Scenes.Count; i++)
+                    {
+                        if (_configurationSettings.Scenes[i].ActiveOnPlay)
+                        {
+                            EditorSceneManager.LoadSceneInPlayMode(_configurationSettings.Scenes[i].ScenePath, new LoadSceneParameters(LoadSceneMode.Additive));
+                        }
+                    }
+                }
+            }
         }
 
         private static void UpdateSceneStatusOnEnterPlayMode(List<SceneStatus> sceneStatus)

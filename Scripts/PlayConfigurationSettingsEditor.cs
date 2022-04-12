@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace EditorPlayConfiguration
@@ -7,9 +8,10 @@ namespace EditorPlayConfiguration
     public class PlayConfigurationSettingsEditor : Editor
     {
         private const string EnablePlayConfigurationInfo = "Enable PlayConfiguration";
-        private const string RestoreScenesAfterPlayInfo = "Restore scenes after play mode ended";
         private const string SearchScenesInBuildOnlyInfo = "Search scenes only in build";
         private const string SearchScenesOnlyInPathInfo = "Search scenes only in path";
+        private const string PrimarySceneInfo = "Primary scene (always loaded):";
+        private const string SceneNameInfo = "Scene name";
         private const string ScenePathInfo = "Scene path";
         private const string AppendNewScenes = "Append new scenes";
         private const string RebuildScenesList = "Rebuild scenes list";
@@ -26,12 +28,10 @@ namespace EditorPlayConfiguration
 
             if (!configuration.EnablePlayConfiguration)
             {
+                EditorSceneManager.playModeStartScene = null;
                 return;
             }
-
-            configuration.RestoreScenesAfterPlayModeEnded =
-                EditorGUILayout.Toggle(RestoreScenesAfterPlayInfo, configuration.RestoreScenesAfterPlayModeEnded);
-
+            
             EditorGUILayout.Space(5);
 
             EditorGUI.BeginDisabledGroup(configuration.SearchOnlyInPath);
@@ -56,8 +56,21 @@ namespace EditorPlayConfiguration
 
             EditorGUILayout.Space(15);
 
-            EditorGUI.BeginChangeCheck();
+            if (configuration.Scenes.Count > 0)
+            {
+                EditorGUILayout.LabelField(PrimarySceneInfo);
+                configuration.Scenes[0].SceneName =
+                    EditorGUILayout.TextField(SceneNameInfo, configuration.Scenes[0].SceneName);
+                configuration.Scenes[0].ScenePath =
+                    EditorGUILayout.TextField(ScenePathInfo, configuration.Scenes[0].ScenePath);
 
+                configuration.Scenes[0].ActiveOnPlay = true;
+                
+                EditorGUILayout.Space(15);
+            }
+
+            EditorGUI.BeginChangeCheck();
+            
             EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(configuration.Scenes)), true);
 
             EditorGUILayout.Space(15);
