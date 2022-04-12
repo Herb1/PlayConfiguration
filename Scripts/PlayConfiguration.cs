@@ -49,38 +49,30 @@ namespace EditorPlayConfiguration
             }
             
             var primaryScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(_configurationSettings.Scenes[0].ScenePath);
-            bool primarySceneInEditor = false;
-            
-            
-            if (primaryScene != null)
-            {
-                Scene primaryEditorScene = SceneManager.GetSceneByName(primaryScene.name);
-                if (primaryEditorScene.isLoaded)
-                {
-                    EditorSceneManager.playModeStartScene = primaryScene;
-                    primarySceneInEditor = true;
-                }
-                else
-                {
-                    EditorSceneManager.playModeStartScene = null;
-                }
-            }
-            else
-            {
-                EditorSceneManager.playModeStartScene = null;
-            }
 
-            if (primarySceneInEditor && state == PlayModeStateChange.EnteredPlayMode)
+            switch (state)
             {
-                if (primaryScene != null)
-                {
-                    for (int i = 1; i < _configurationSettings.Scenes.Count; i++)
+                case PlayModeStateChange.ExitingEditMode:
+                    
+                    if (primaryScene != null)
                     {
-                        if (_configurationSettings.Scenes[i].ActiveOnPlay)
+                        EditorSceneManager.playModeStartScene = primaryScene;
+                    }
+                    
+                    break;
+                case PlayModeStateChange.EnteredPlayMode:
+                {
+                    if (primaryScene != null)
+                    {
+                        for (int i = 1; i < _configurationSettings.Scenes.Count; i++)
                         {
-                            EditorSceneManager.LoadSceneInPlayMode(_configurationSettings.Scenes[i].ScenePath, new LoadSceneParameters(LoadSceneMode.Additive));
+                            if (_configurationSettings.Scenes[i].ActiveOnPlay)
+                            {
+                                EditorSceneManager.LoadSceneInPlayMode(_configurationSettings.Scenes[i].ScenePath, new LoadSceneParameters(LoadSceneMode.Additive));
+                            }
                         }
                     }
+                    break;
                 }
             }
         }

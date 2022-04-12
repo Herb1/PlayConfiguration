@@ -93,6 +93,7 @@ namespace EditorPlayConfiguration
             }
 
             EditorGUILayout.EndHorizontal();
+            EditorUtility.SetDirty(target);
         }
     }
 }
