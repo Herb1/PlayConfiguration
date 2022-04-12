@@ -43,36 +43,40 @@ namespace EditorPlayConfiguration
         
         private static void LogPlayModeState(PlayModeStateChange state)
         {
-            if (!_configurationSettings.EnablePlayConfiguration)
+            if (!_configurationSettings.EnablePlayConfiguration || _configurationSettings.Scenes == null || _configurationSettings.Scenes.Count == 0)
             {
                 return;
             }
             
             var primaryScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(_configurationSettings.Scenes[0].ScenePath);
-
-            switch (state)
+            bool primarySceneLoaded = false;
+            
+            if (primaryScene != null)
             {
-                case PlayModeStateChange.ExitingEditMode:
-                    
-                    if (primaryScene != null)
-                    {
-                        EditorSceneManager.playModeStartScene = primaryScene;
-                    }
-                    
-                    break;
-                case PlayModeStateChange.EnteredPlayMode:
+                Scene primaryEditorScene = SceneManager.GetSceneByName(primaryScene.name);
+                if (primaryEditorScene.isLoaded)
                 {
-                    if (primaryScene != null)
+                    primarySceneLoaded = true;
+                    EditorSceneManager.playModeStartScene = primaryScene;
+                }
+                else
+                {
+                    EditorSceneManager.playModeStartScene = null;
+                }
+            }
+            else
+            {
+                EditorSceneManager.playModeStartScene = null;
+            }
+
+            if (primarySceneLoaded && state == PlayModeStateChange.EnteredPlayMode)
+            {
+                for (int i = 1; i < _configurationSettings.Scenes.Count; i++)
+                {
+                    if (_configurationSettings.Scenes[i].ActiveOnPlay)
                     {
-                        for (int i = 1; i < _configurationSettings.Scenes.Count; i++)
-                        {
-                            if (_configurationSettings.Scenes[i].ActiveOnPlay)
-                            {
-                                EditorSceneManager.LoadSceneInPlayMode(_configurationSettings.Scenes[i].ScenePath, new LoadSceneParameters(LoadSceneMode.Additive));
-                            }
-                        }
+                        EditorSceneManager.LoadSceneInPlayMode(_configurationSettings.Scenes[i].ScenePath, new LoadSceneParameters(LoadSceneMode.Additive));
                     }
-                    break;
                 }
             }
         }
